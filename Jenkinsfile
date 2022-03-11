@@ -1,13 +1,6 @@
 pipeline {
     agent any
     stages {
-        stage('Build') {
-            steps {
-                withMaven(maven: 'mvn') {
-                    sh "mvn clean package"
-                }
-            }
-        }
         stage('Build Docker image') {
             steps {
                 sh "docker build --no-cache --rm -t '${imageName}':'${imageTag}' ."
