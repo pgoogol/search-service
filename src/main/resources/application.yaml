@@ -1,0 +1,25 @@
+com:
+    pgoogol:
+        searchservice:
+            criteria-config:
+                file: /home/pgogol/config.json
+
+spring:
+    elasticsearch:
+        uris: ${ELK_REST_URIS:localhost:9200}
+        username: ${ELK_USERNAME:}
+        password: ${ELK_PASSWORD:}
+        ssl_enabled: ${ELK_SSL_ENABLED:false}
+        index-config:
+            #address-index: ${CUSTOMER_INDEX:adresses_read2test}
+            #address-index: ${INDEX:policy_read}
+            address-index: ${INDEX:dpc-history-event-000001}
+
+
+logging:
+    level:
+        com:
+            pgoogol:
+                search-service: ${LOG_LEVEL_ROOT:DEBUG}
+server:
+    port: 8081
