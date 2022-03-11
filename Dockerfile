@@ -1,5 +1,5 @@
 FROM openjdk:11 as build
-WORKDIR /workspace/app
+WORKDIR /workspace/a_master
 
 COPY pom.xml .
 COPY src src
