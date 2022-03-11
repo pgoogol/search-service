@@ -2,6 +2,7 @@ FROM openjdk:11 as build
 WORKDIR /workspace/a_master
 
 COPY mvnw .
+COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 
