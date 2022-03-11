@@ -1,10 +1,11 @@
 FROM openjdk:11 as build
 WORKDIR /workspace/a_master
 
+COPY mvnw .
 COPY pom.xml .
 COPY src src
 
-RUN mvn clean package verify
+RUN ./mvnw clean package verify
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
 FROM openjdk:11
