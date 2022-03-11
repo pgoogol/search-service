@@ -19,7 +19,7 @@ pipeline {
         }
         stage('Build Docker image') {
             steps {
-                sh "docker build --no-cache --rm -t '${imageName}':'${imageTag}' ."
+                sh "docker build --no-cache --rm --build-arg VERSION='${artifactVersion}' --build-arg ARTIFACT_ID='${artifactId}' -t '${imageName}':'${imageTag}' ."
             }
         }
         stage('Push Docker image') {

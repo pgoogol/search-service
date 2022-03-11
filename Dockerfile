@@ -11,5 +11,7 @@ RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
 FROM openjdk:11
 VOLUME /tmp
+ARG ARTIFACT_ID
+ARG VERSION
 ENV APP_FILE $ARTIFACT_ID-$VERSION.jar
 COPY --from=build /workspace/a_master/target/$APP_FILE /usr/apps
