@@ -21,7 +21,7 @@ pipeline {
         }
         stage('Push Docker image') {
             steps {
-                withDockerRegistry([ url: "docker.io/library/search-service" ]) {
+                withDockerRegistry([ credentialsId: "docker-registry-credentials", url: "https://hub.docker.com/repository/docker/jocker1234/search-service" ]) {
                     sh 'docker login --username=jocker1234 --password=Qzwsdcrf12.'
                     sh "docker push ${imageName}:${imageTag}"
                 }
