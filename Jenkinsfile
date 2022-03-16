@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+    		DOCKERHUB_CREDENTIALS=credentials('docker')
+    	}
     stages {
         stage('init') {
             steps {
@@ -21,11 +24,14 @@ pipeline {
         }
         stage('Push Docker image') {
             steps {
-                withDockerRegistry([ credentialsId: "docker-registry-credentials", url: "https://hub.docker.com/repository/docker/jocker1234/search-service" ]) {
-                    sh 'docker login --username=jocker1234 --password=Qzwsdcrf12.'
-                    sh "docker push ${imageName}:${imageTag}"
-                }
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh "docker push ${imageName}:${imageTag}"
             }
         }
     }
+    post {
+    		always {
+    			sh 'docker logout'
+    		}
+    	}
 }
