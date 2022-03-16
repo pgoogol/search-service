@@ -21,8 +21,10 @@ pipeline {
         }
         stage('Push Docker image') {
             steps {
-                sh 'docker login --username=jocker1234 --password=Qzwsdcrf12.'
-                sh "docker push ${imageName}:${imageTag}"
+                withDockerRegistry([ credentialsId: "docker-hub-credentials", url: "docker.io/library/search-service" ]) {
+                    sh 'docker login --username=jocker1234 --password=Qzwsdcrf12.'
+                    sh "docker push ${imageName}:${imageTag}"
+                }
             }
         }
     }
