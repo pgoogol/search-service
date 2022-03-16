@@ -22,7 +22,7 @@ pipeline {
         stage('Push Docker image') {
             steps {
                 sh 'docker login --username=jocker1234 --password=Qzwsdcrf12.'
-                sh 'docker push '${imageName}'
+                sh "docker push ${imageName}:${imageTag}"
             }
         }
     }
