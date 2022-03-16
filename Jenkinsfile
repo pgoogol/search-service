@@ -24,9 +24,8 @@ pipeline {
         }
         stage('Push Docker image') {
             steps {
-                withDockerRegistry(credentialsId: 'docker') {
-                    sh "docker push ${imageName}:${imageTag}"
-                }
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh "docker push jocker1234/${imageName}:${imageTag}"
             }
         }
     }
