@@ -12,6 +12,9 @@ pipeline {
                     artifactVersion = sh script: 'grep -oPm1 "(?<=<version>)[^<]+" "pom.xml"', returnStdout: true
                     artifactVersion = artifactVersion.substring(0, artifactVersion.length() - 1)
                     imageName = "${artifactId}"
+                    sh "echo ${artifactId}"
+                    sh "echo ${artifactVersion}"
+                    sh "echo ${imageName}"
                 }
             }
         }
