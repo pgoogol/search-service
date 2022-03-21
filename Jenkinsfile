@@ -19,13 +19,14 @@ pipeline {
         }
         stage('Build Docker image') {
             steps {
-                sh "docker build --no-cache --rm --build-arg VERSION='${artifactVersion}' --build-arg ARTIFACT_ID='${artifactId}' -t '${imageName}':'${imageTag}' ."
+                sh "docker build --no-cache --rm --build-arg VERSION='${artifactVersion}' --build-arg ARTIFACT_ID='${artifactId}' -t '${imageName}':latest' ."
             }
         }
         stage('Push Docker image') {
             steps {
+                sh "docker tag ${imageName} jocker1234/${imageName}"
                 sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                sh "docker push ${imageName}:${imageTag}"
+                sh "docker push jocker1234${imageName}"
             }
         }
     }
