@@ -11,9 +11,7 @@ pipeline {
                     artifactId = artifactId.substring(0, artifactId.length() - 1)
                     artifactVersion = sh script: 'grep -oPm1 "(?<=<version>)[^<]+" "pom.xml"', returnStdout: true
                     artifactVersion = artifactVersion.substring(0, artifactVersion.length() - 1)
-                    timestamp = sh(returnStdout: true, script: 'echo $(date +%Y%m%d%H%M%S)').trim()
                     imageName = "${artifactId}"
-                    imageTag = "${artifactVersion}.${BUILD_NUMBER}.${timestamp}"
                 }
             }
         }
