@@ -34,7 +34,7 @@ pipeline {
         stage('Push Docker image to Nexus') {
             steps {
                 sh "docker tag ${imageName}:'${imageTag}' localhost:8082/${imageName}:'${imageTag}'"
-                sh 'echo $NEXUS_CREDENTIALS_PSW | docker login -u $NEXUS_CREDENTIALS_USR --password-stdin'
+                sh 'echo $NEXUS_CREDENTIALS_PSW | docker login http://localhost:8082/repository/docker-hosted/ -u $NEXUS_CREDENTIALS_USR --password-stdin'
                 sh "docker push localhost:8082/${imageName}:'${imageTag}'"
     			sh 'docker logout'
             }
