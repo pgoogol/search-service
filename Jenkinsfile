@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
     		DOCKERHUB_CREDENTIALS=credentials('docker')
+    		NEXUS_CREDENTIALS=credentials('nexus')
     	}
     stages {
         stage('init') {
@@ -22,17 +23,21 @@ pipeline {
                 sh "docker build --no-cache --rm --build-arg VERSION='${artifactVersion}' --build-arg ARTIFACT_ID='${artifactId}' -t '${imageName}':'${imageTag}' ."
             }
         }
-        stage('Push Docker image') {
+        stage('Push Docker image to DockerHub') {
             steps {
                 sh "docker tag ${imageName}:'${imageTag}' jocker1234/${imageName}:'${imageTag}'"
                 sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
                 sh "docker push jocker1234/${imageName}:'${imageTag}'"
+    			sh 'docker logout'
+            }
+        }
+        stage('Push Docker image to Nexus') {
+            steps {
+                sh "docker tag ${imageName}:'${imageTag}' localhost:8082/${imageName}:'${imageTag}'"
+                sh 'echo $NEXUS_CREDENTIALS_PSW | docker login -u $NEXUS_CREDENTIALS_USR --password-stdin'
+                sh "docker push localhost:8082/${imageName}:'${imageTag}'"
+    			sh 'docker logout'
             }
         }
     }
-    post {
-    		always {
-    			sh 'docker logout'
-    		}
-    	}
 }
