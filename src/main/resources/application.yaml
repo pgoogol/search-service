@@ -13,13 +13,15 @@ spring:
         index-config:
             #address-index: ${CUSTOMER_INDEX:adresses_read2test}
             #address-index: ${INDEX:policy_read}
-            address-index: ${INDEX:dpc-history-event-000001}
+            address-index: ${INDEX:adresses_read2test}
 
 
 logging:
+    file:
+        name: /tmp/logstash/log.log
     level:
         com:
             pgoogol:
                 search-service: ${LOG_LEVEL_ROOT:DEBUG}
 server:
-    port: 8081
+    port: 8083
