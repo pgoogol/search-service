@@ -5,13 +5,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 
+import java.util.Map;
+
 @Getter
 @Setter
-public class SearchCriteria<T> {
+public class SearchCriteria {
 
     @Schema(description = "Pageable")
     private Page pageable = new Page();
     @Schema(description = "Search criteria")
-    private T criteria;
+    private Map<String, String> criteriaMap;
 
 }

@@ -11,10 +11,13 @@ import lombok.*;
 @AllArgsConstructor
 public class Page {
 
+    public static final int PAGE_NUMBER = 0;
+    public static final int SIZE_NUMBER = 100;
+
     @Schema(description = "Number of page", example = "0")
-    private int page = 0;
+    private int page = PAGE_NUMBER;
     @Schema(description = "Number of rows per page", example = "100")
-    private int size = 100;
+    private int size = SIZE_NUMBER;
 
     public static int getTotalPages(long total, int size) {
         return (int) Math.ceil((double) total / size);

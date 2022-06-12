@@ -1,7 +1,6 @@
 package com.pgoogol.searchservice.controller;
 
-import com.pgoogol.searchservice.model.AdressesReadEntity;
-import com.pgoogol.searchservice.model.configurationcriteria.CriteriaConfig;
+import com.pgoogol.dictionary.client.model.SearchConfig;
 import com.pgoogol.searchservice.service.CriteriaConfigService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,32 +23,32 @@ import java.util.List;
 @Tag(name = "criteria", description = "Criteria API")
 public class CriteriaConfigController {
 
-    private final CriteriaConfigService criteriaConfigService;
+    private final CriteriaConfigService searchConfigService;
 
-    public CriteriaConfigController(CriteriaConfigService criteriaConfigService) {
-        this.criteriaConfigService = criteriaConfigService;
+    public CriteriaConfigController(CriteriaConfigService searchConfigService) {
+        this.searchConfigService = searchConfigService;
     }
 
     @Operation(summary = "Get Configuration For Criteria", tags = { "criteria" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CriteriaConfig.class)))) })
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = SearchConfig.class)))) })
     @GetMapping("/config")
-    public ResponseEntity<List<CriteriaConfig>> getCriteriaConfig() {
-        return ResponseEntity.ok(criteriaConfigService.getConfigCriteria());
+    public ResponseEntity<List<SearchConfig>> getSearchConfig() {
+        return ResponseEntity.ok(searchConfigService.getConfigCriteria());
     }
 
     @Operation(summary = "Set Configuration For Criteria", tags = { "criteria" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CriteriaConfig.class)))) })
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = SearchConfig.class)))) })
     @PostMapping("/config")
-    public ResponseEntity<Collection<CriteriaConfig>> createCriteriaConfig(
+    public ResponseEntity<Collection<SearchConfig>> createSearchConfig(
             @Parameter(
                     description = "Configuration criteria",
-                    array = @ArraySchema(schema = @Schema(implementation = CriteriaConfig.class))
-            ) @RequestBody List<CriteriaConfig> criteriaConfigList) {
-        return ResponseEntity.ok(criteriaConfigService.createConfigCriteria(criteriaConfigList).values());
+                    array = @ArraySchema(schema = @Schema(implementation = SearchConfig.class))
+            ) @RequestBody List<SearchConfig> searchConfigList) {
+        return ResponseEntity.ok(searchConfigService.createConfigCriteria(searchConfigList).values());
     }
 
 }

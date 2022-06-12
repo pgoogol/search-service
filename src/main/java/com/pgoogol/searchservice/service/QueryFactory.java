@@ -3,8 +3,7 @@ package com.pgoogol.searchservice.service;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBase;
-import co.elastic.clients.elasticsearch._types.query_dsl.WildcardQuery;
-import com.pgoogol.searchservice.model.configurationcriteria.ListType;
+import com.pgoogol.dictionary.client.enums.ListType;
 
 public final class QueryFactory {
 
@@ -72,7 +71,6 @@ public final class QueryFactory {
                 boolQueryBuilder.should(query);
                 break;
             default:
-                return;
         }
     }
 
