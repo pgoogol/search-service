@@ -2,7 +2,12 @@ com:
     pgoogol:
         searchservice:
             criteria-config:
-                file: /home/pgogol/config.json
+                type: ELASTICSEARCH
+                index-name: dictionary-config
+                #type: FILE
+                file: C:/log/config.json
+                #file: /home/pgogol/config.json
+                #index-name: xyz-dictionary
 
 spring:
     elasticsearch:
