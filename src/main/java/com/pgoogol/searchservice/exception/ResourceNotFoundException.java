@@ -1,4 +1,4 @@
-package com.pgoogol.searchservice.service;
+package com.pgoogol.searchservice.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
 

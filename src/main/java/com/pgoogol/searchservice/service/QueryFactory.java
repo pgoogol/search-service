@@ -3,7 +3,7 @@ package com.pgoogol.searchservice.service;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBase;
-import com.pgoogol.dictionary.client.enums.ListType;
+import com.pgoogol.searchservice.model.dictionary.enums.ListType;
 
 public final class QueryFactory {
 
@@ -52,7 +52,7 @@ public final class QueryFactory {
             case QueryString:
                 return query.queryString().query().split(":")[0];
             default:
-                return null;
+                return "";
         }
     }
 

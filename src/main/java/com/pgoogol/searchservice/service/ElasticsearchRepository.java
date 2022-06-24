@@ -2,9 +2,6 @@ package com.pgoogol.searchservice.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
-import co.elastic.clients.elasticsearch._types.mapping.NestedProperty;
-import co.elastic.clients.elasticsearch._types.mapping.ObjectProperty;
-import co.elastic.clients.elasticsearch._types.mapping.Property;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
@@ -12,13 +9,12 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.transport.TransportException;
 import co.elastic.clients.util.ObjectBuilder;
-import com.pgoogol.dictionary.client.enums.ListType;
-import com.pgoogol.dictionary.client.model.SearchConfig;
+import com.pgoogol.searchservice.exception.ResourceNotFoundException;
 import com.pgoogol.searchservice.model.ResultPage;
 import com.pgoogol.searchservice.model.SearchCriteria;
+import com.pgoogol.searchservice.model.dictionary.enums.ListType;
+import com.pgoogol.searchservice.model.dictionary.model.SearchConfig;
 import lombok.SneakyThrows;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.context.annotation.RequestScope;
@@ -34,14 +30,13 @@ import static com.pgoogol.searchservice.model.Page.*;
 @RequestScope
 public class ElasticsearchRepository {
 
-    private static final Logger log = LogManager.getLogger(ElasticsearchRepository.class);
-    private static final String DOT = ".";
-
     private final ElasticsearchClient client;
     private final CriteriaConfigStrategy criteriaConfigService;
+    private final IndexPropertiesComponent indexPropertiesComponent;
 
     public ElasticsearchRepository(ElasticsearchClient client, List<CriteriaConfigStrategy> criteriaConfigStrategies,
-                                   @Value("${com.pgoogol.searchservice.criteria-config.type}") String criteriaType) {
+                                   @Value("${com.pgoogol.searchservice.criteria-config.type}") String criteriaType, IndexPropertiesComponent indexPropertiesComponent) {
+        this.indexPropertiesComponent = indexPropertiesComponent;
         this.criteriaConfigService = criteriaConfigStrategies
                 .stream()
                 .filter(criteriaConfigType -> criteriaConfigType.getType().isEqual(criteriaType))
@@ -64,15 +59,14 @@ public class ElasticsearchRepository {
 
     @SneakyThrows({ElasticsearchException.class, TransportException.class, IOException.class})
     public <T> ResultPage<T> search(String dictionaryCode, SearchCriteria searchCriteria, Class<T> clazz) {
-        SearchResponse<T> searchResponse = null;
+        SearchResponse<T> searchResponse;
         Function<SearchRequest.Builder, ObjectBuilder<SearchRequest>> searchBuilder;
         if (searchCriteria == null) {
             searchCriteria = new SearchCriteria();
             searchBuilder = searchAll();
         } else {
             criteriaConfigService.prepareCriteriaConfig(dictionaryCode);
-            Map<String, BoolQuery.Builder> nestedMap = new LinkedHashMap<>();
-            initProperties(searchCriteria.getCriteriaMap().keySet(), nestedMap);
+            Map<String, BoolQuery.Builder> nestedMap = indexPropertiesComponent.initProperties(searchCriteria.getCriteriaMap().keySet());
 
             List<Query> searchCollection = searchCriteria.getCriteriaMap().entrySet().stream().map(es -> {
                 Optional<SearchConfig> criteriaConfigOptional = criteriaConfigService.getCriteriaConfig(es.getKey());
@@ -85,7 +79,7 @@ public class ElasticsearchRepository {
             }).collect(Collectors.toList());
 
             List<Query> nestedQueries = searchCollection.stream()
-                    .filter(query -> this.verifyNested(query, nestedMap))
+                    .filter(query -> this.prepareNested(query, nestedMap))
                     .collect(Collectors.toList());
             searchCollection.removeAll(nestedQueries);
 
@@ -110,8 +104,7 @@ public class ElasticsearchRepository {
         return boolQuery.build();
     }
 
-    //rename to 'prepareNested'
-    private boolean verifyNested(Query query, Map<String, BoolQuery.Builder> nestedMap) {
+    private boolean prepareNested(Query query, Map<String, BoolQuery.Builder> nestedMap) {
         String field = QueryFactory.getField(query);
         String[] split = field.split("\\.");
         for (int i = split.length - 1; i > 0; i--) {
@@ -169,49 +162,6 @@ public class ElasticsearchRepository {
                 query.filter().isEmpty() && query.must().isEmpty() &&
                         query.mustNot().isEmpty() && query.should().isEmpty()
         );
-    }
-//as new component
-    @SneakyThrows({ElasticsearchException.class, TransportException.class, IOException.class})
-    public void initProperties(Set<String> serarchCriteriaKeys, Map<String, BoolQuery.Builder> nestedMap) {
-        Map<String, Property> properties = client.indices()
-                .getMapping(builder -> builder.index(criteriaConfigService.getIndexName()))
-                .get(criteriaConfigService.getIndexName())
-                .mappings()
-                .properties();
-
-        serarchCriteriaKeys.stream()
-                .map(criteriaConfigService::getIndexFieldFromCriteriaConfig)
-                .forEach(value -> {
-                    if (value.contains(DOT)) {
-                        String[] split = value.split("\\.");
-                        StringBuilder path = new StringBuilder(split[0]);
-                        prepareNestedMap(
-                                skipFirst(split),
-                                path,
-                                properties.get(split[0]),
-                                nestedMap
-                        );
-                    }
-                });
-    }
-
-    private void prepareNestedMap(String[] splittedKeysWithoutFirst, StringBuilder path, Property property, Map<String, BoolQuery.Builder> nestedMap) {
-        if (property != null && property.isNested()) {
-            nestedMap.putIfAbsent(path.toString(), new BoolQuery.Builder());
-        }
-        if (splittedKeysWithoutFirst.length != 0 && property != null) {
-            if (property._get() instanceof NestedProperty) {
-                property = ((NestedProperty) property._get()).properties().get(splittedKeysWithoutFirst[0]);
-            } else if (property._get() instanceof ObjectProperty) {
-                property = ((ObjectProperty) property._get()).properties().get(splittedKeysWithoutFirst[0]);
-            }
-            path.append(DOT).append(splittedKeysWithoutFirst[0]);
-            prepareNestedMap(skipFirst(splittedKeysWithoutFirst), path, property, nestedMap);
-        }
-    }
-
-    private String[] skipFirst(String[] splittedString) {
-        return Arrays.stream(splittedString).skip(1).toArray(String[]::new);
     }
 
     private Function<SearchRequest.Builder, ObjectBuilder<SearchRequest>> searchAll() {

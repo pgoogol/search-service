@@ -1,8 +1,8 @@
 package com.pgoogol.searchservice.service;
 
-import com.pgoogol.dictionary.client.enums.ListType;
-import com.pgoogol.dictionary.client.model.SearchConfig;
 import com.pgoogol.searchservice.enums.CriteriaConfigType;
+import com.pgoogol.searchservice.model.dictionary.enums.ListType;
+import com.pgoogol.searchservice.model.dictionary.model.SearchConfig;
 
 import java.util.List;
 import java.util.Optional;

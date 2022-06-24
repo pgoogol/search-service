@@ -1,10 +1,10 @@
 package com.pgoogol.searchservice.controller;
 
-import com.pgoogol.dictionary.client.model.SearchConfig;
 import com.pgoogol.searchservice.enums.CriteriaConfigType;
+import com.pgoogol.searchservice.model.dictionary.model.SearchConfig;
 import com.pgoogol.searchservice.service.CriteriaConfigStrategy;
 import com.pgoogol.searchservice.service.FileCriteriaConfigStrategy;
-import com.pgoogol.searchservice.service.ResourceNotFoundException;
+import com.pgoogol.searchservice.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

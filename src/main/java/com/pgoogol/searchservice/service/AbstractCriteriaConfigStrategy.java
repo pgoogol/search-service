@@ -1,9 +1,9 @@
 package com.pgoogol.searchservice.service;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import com.pgoogol.dictionary.client.enums.ListType;
-import com.pgoogol.dictionary.client.model.SearchConfig;
 import com.pgoogol.searchservice.config.properties.CriteriaConfigProperties;
+import com.pgoogol.searchservice.model.dictionary.enums.ListType;
+import com.pgoogol.searchservice.model.dictionary.model.SearchConfig;
 
 import java.util.*;
 import java.util.function.Function;

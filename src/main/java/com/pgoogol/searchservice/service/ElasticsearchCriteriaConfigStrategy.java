@@ -1,22 +1,22 @@
 package com.pgoogol.searchservice.service;
 
-import com.pgoogol.dictionary.client.model.DictionaryConfig;
-import com.pgoogol.dictionary.client.model.SearchConfig;
 import com.pgoogol.elasticsearch.data.repository.ElasticsearchRepository;
 import com.pgoogol.searchservice.config.properties.CriteriaConfigProperties;
 import com.pgoogol.searchservice.enums.CriteriaConfigType;
+import com.pgoogol.searchservice.exception.ResourceNotFoundException;
+import com.pgoogol.searchservice.model.dictionary.model.DictionaryConfig;
+import com.pgoogol.searchservice.model.dictionary.model.SearchConfig;
 import lombok.SneakyThrows;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static com.pgoogol.searchservice.enums.CriteriaConfigType.ELASTICSEARCH;
+import static com.pgoogol.searchservice.model.dictionary.enums.Fields.INDEX_NAME;
+import static com.pgoogol.searchservice.model.dictionary.enums.Fields.SEARCH_CONFIG;
 
 @Service
 @RequestScope
@@ -39,39 +39,32 @@ public class ElasticsearchCriteriaConfigStrategy extends AbstractCriteriaConfigS
 
     @Override
     public void prepareCriteriaConfig(String dictionaryCode) {
-        Optional<DictionaryConfig> dictionaryConfigOptional = repository.getById(
-                criteriaConfigProperties.getIndexName(),
-                dictionaryCode,
-                Arrays.asList("indexName", "searchConfig"),
-                DictionaryConfig.class
-        );
-        if (dictionaryConfigOptional.isPresent()) {
-            DictionaryConfig dictionaryConfig = dictionaryConfigOptional.get();
+            DictionaryConfig dictionaryConfig = getDictionaryConfig(dictionaryCode);
             indexName = dictionaryConfig.getIndexName();
             prepareCriteriaConfigMap(dictionaryConfig.getSearchConfig());
-        } else {
-            throw new ResourceNotFoundException(String.format("Not found element with code %s", dictionaryCode));
-        }
     }
 
     @SneakyThrows(ResourceNotFoundException.class)
     @Override
-    public List<SearchConfig> getConfigCriteria(@NotBlank String dictionaryCode) {
+    public List<SearchConfig> getConfigCriteria(String dictionaryCode) {
+        DictionaryConfig dictionaryConfig = getDictionaryConfig(dictionaryCode);
+        return dictionaryConfig.getSearchConfig();
+    }
+
+    private DictionaryConfig getDictionaryConfig(String dictionaryCode) {
         if (dictionaryCode.isBlank()) {
-            throw new ResourceNotFoundException("dictionaryCode is Blank");
+            throw new ResourceNotFoundException("DictionaryCode is Blank");
         }
         Optional<DictionaryConfig> dictionaryConfigOptional = repository.getById(
                 criteriaConfigProperties.getIndexName(),
                 dictionaryCode,
-                Arrays.asList("indexName", "searchConfig"),
+                Arrays.asList(INDEX_NAME.getName(), SEARCH_CONFIG.getName()),
                 DictionaryConfig.class
         );
-        if (dictionaryConfigOptional.isPresent()) {
-            DictionaryConfig dictionaryConfig = dictionaryConfigOptional.get();
-            return dictionaryConfig.getSearchConfig();
-        } else {
+        if (dictionaryConfigOptional.isEmpty()) {
             throw new ResourceNotFoundException(String.format("Not found element with code %s", dictionaryCode));
         }
+        return dictionaryConfigOptional.get();
     }
 
 }

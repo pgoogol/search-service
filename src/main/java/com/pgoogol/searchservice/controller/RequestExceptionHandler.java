@@ -27,20 +27,20 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class RequestExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private static Logger log = LogManager.getLogger(RequestExceptionHandler.class);
+    private static final Logger log = LogManager.getLogger(RequestExceptionHandler.class);
 
     @ExceptionHandler({IllegalArgumentException.class})
-    protected ResponseEntity handleIllegalArgException(IllegalArgumentException exception, WebRequest request) {
+    protected ResponseEntity<Object> handleIllegalArgException(IllegalArgumentException exception, WebRequest request) {
         return handleBadRequest(exception, request);
     }
 
     @ExceptionHandler({IOException.class})
-    protected ResponseEntity handleIOException(IllegalArgumentException exception, WebRequest request) {
+    protected ResponseEntity<Object> handleIOException(IllegalArgumentException exception, WebRequest request) {
         return handleServerErrorRequest(exception, request);
     }
 
     @ExceptionHandler({Throwable.class})
-    protected ResponseEntity handleAllException(Throwable exception, WebRequest request) {
+    protected ResponseEntity<Object> handleAllException(Throwable exception, WebRequest request) {
         log.error(exception.getMessage(), exception);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -48,7 +48,7 @@ public class RequestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity handleBindException(BindException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         List<String> errors = ex.getBindingResult()
                 .getAllErrors()
                 .stream()

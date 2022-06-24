@@ -48,7 +48,7 @@ public class SearchController {
 
     @Operation(summary = "Autocompleat (Not Working)", tags = { "address" })
     @GetMapping("/autocomplete")
-    public ResponseEntity autocomplete() {
+    public ResponseEntity<Object> autocomplete() {
         return null;
     }
 

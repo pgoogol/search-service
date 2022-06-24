@@ -2,12 +2,11 @@ package com.pgoogol.searchservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.pgoogol.dictionary.client.model.SearchConfig;
 import com.pgoogol.searchservice.config.properties.CriteriaConfigProperties;
 import com.pgoogol.searchservice.enums.CriteriaConfigType;
+import com.pgoogol.searchservice.model.dictionary.model.SearchConfig;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
