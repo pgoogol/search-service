@@ -15,10 +15,6 @@ spring:
         username: ${ELK_USERNAME:}
         password: ${ELK_PASSWORD:}
         ssl_enabled: ${ELK_SSL_ENABLED:false}
-        index-config:
-            #address-index: ${CUSTOMER_INDEX:adresses_read2test}
-            #address-index: ${INDEX:policy_read}
-            address-index: ${INDEX:adresses_read2test}
 
 
 logging:
